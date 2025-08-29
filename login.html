@@ -1,112 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="login.css">
-    <title>Login</title>
-    <
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="login.css">
 </head>
-
 <body>
-    <div class="wrapper">
-        <div class="form-container login">
-            <form method="post" name="Login">
-                <h2>login</h2>
-                <div class="form-group">
-                    <input type="text" required>
-                    <img src="icons/user-solid.svg" alt="User Icon" class="form-icon">
-                    <label for="">username</label>
-                </div>
-                <div class="form-group">
-                    <input type="password" required>
-                    <img src="icons/lock-solid.svg" alt="Lock Icon" class="form-icon">
-                    <label for="">password</label>
-                <button type="submit" class="btn">login</button>
-            </form>
+  <div class="wrapper">
+    <div class="form-container login">
+      <form method="post" name="Login">
+        <h2>Login</h2>
+        <div class="form-group">
+          <input type="email" name="email" required>
+          <img src="icons/envelope-solid.svg" alt="Email Icon" class="form-icon">
+          <label>Email</label>
         </div>
+        <div class="form-group">
+          <input type="password" name="password" required>
+          <img src="icons/lock-solid.svg" alt="Lock Icon" class="form-icon">
+          <label>Password</label>
+        </div>
+        <button type="submit" class="btn">Login</button>
+      </form>
     </div>
-    <script>
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwm7WpfglKphVFD8rMc2AKnc9xR4LhR2jO5ncTOu4j42MNb4YU4CwArf1degUuNQ4QtTw/exec';
-const form = document.forms['Login'];
+  </div>
 
-// Add CSS dynamically for loader
-const style = document.createElement('style');
-style.textContent = `
-    .loader {
-        display: none;
-        width: 20px;
-        height: 20px;
-        border: 3px solid #f3f3f3;
-        border-radius: 50%;
-        border-top: 3px solid #3498db;
-        animation: spin 1s linear infinite;
-        margin: 10px auto;
-    }
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    .btn:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-    }
-`;
-document.head.appendChild(style);
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
 
-// Loader creation
-const loginBtn = form.querySelector('.btn');
-const loader = document.createElement('div');
-loader.className = 'loader';
-loginBtn.parentNode.insertBefore(loader, loginBtn.nextSibling);
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAGMdccU6qvGR9IJLwko6c6Kx77jdhDAV0",
+      authDomain: "trashtrademarketplace-24011.firebaseapp.com",
+      projectId: "trashtrademarketplace-24011",
+      storageBucket: "trashtrademarketplace-24011.appspot.com",
+      messagingSenderId: "77243085731",
+      appId: "1:77243085731:web:9d40959859718fd3696016"
+    };
 
-// Utility: Reset button and loader
-function resetUI() {
-    loginBtn.disabled = false;
-    loginBtn.textContent = 'login';
-    loader.style.display = 'none';
-}
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    const form = document.forms['Login'];
+    const loginBtn = form.querySelector('.btn');
 
-    const username = form.querySelector('input[type="text"]').value.trim();
-    const password = form.querySelector('input[type="password"]').value.trim();
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    // Input validation
-    if (!username || !password) {
-        alert('Please enter both username and password.');
+      const email = form.email.value.trim();
+      const password = form.password.value;
+
+      if (!email || !password) {
+        alert('Please enter both email and password.');
         return;
-    }
+      }
 
-    // UI loading state
-    loader.style.display = 'block';
-    loginBtn.disabled = true;
-    loginBtn.textContent = 'Logging in...';
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Logging in...';
 
-    try {
-        const url = `${scriptURL}?action=checkLogin&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
-        const response = await fetch(url);
-        const data = await response.json();
+      try {
+        // Firebase Auth login
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
 
-        // Logging for analytics
-        console.log(`Login attempt: ${username} – ${data.success ? "SUCCESS" : "FAILED"}`);
+        // Fetch username from Firestore
+        const doc = await db.collection("users").doc(user.uid).get();
+        const username = doc.exists ? doc.data().username : email;
 
-        if (data.success) {
-    window.location.href = `Buyer.html?user=${encodeURIComponent(username)}`; // pass username via URL
-    } else {
-    alert('Invalid username or password. Please try again.');
-    resetUI();
-}
-
-    } catch (error) {
-        console.error('Login error:', error);
-        alert('An error occurred while connecting to the server. Please check your internet connection or try again later.');
-        resetUI();
-    }
-});
-</script>
+        // Redirect to Buyer.html with username
+        window.location.href = `Buyer.html?user=${encodeURIComponent(username)}`;
+      } catch (error) {
+        alert(error.message);
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Login';
+      }
+    });
+  </script>
 </body>
 </html>
