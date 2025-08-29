@@ -9,7 +9,7 @@
 <body>
   <div class="wrapper">
     <div class="form-container login">
-      <form method="post" name="Login">
+      <form name="Login">
         <h2>Login</h2>
         <div class="form-group">
           <input type="email" name="email" required>
@@ -32,15 +32,15 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
 
   <script>
-    // Firebase config
+    // Your Firebase config
     const firebaseConfig = {
-      apiKey: "AIzaSyAGMdccU6qvGR9IJLwko6c6Kx77jdhDAV0",
-      authDomain: "trashtrademarketplace-24011.firebaseapp.com",
-      projectId: "trashtrademarketplace-24011",
-      storageBucket: "trashtrademarketplace-24011.appspot.com",
-      messagingSenderId: "77243085731",
-      appId: "1:77243085731:web:9d40959859718fd3696016"
-    };
+  apiKey: "AIzaSyAGMdccU6qvGR9IJLwko6c6Kx77jdhDAV0",
+  authDomain: "trashtrademarketplace-24011.firebaseapp.com",
+  projectId: "trashtrademarketplace-24011",
+  storageBucket: "trashtrademarketplace-24011.firebasestorage.app",
+  messagingSenderId: "77243085731",
+  appId: "1:77243085731:web:9d40959859718fd3696016"
+};
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
@@ -48,32 +48,27 @@
     const db = firebase.firestore();
 
     const form = document.forms['Login'];
-    const loginBtn = form.querySelector('.btn');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const email = form.email.value.trim();
-      const password = form.password.value;
-
-      if (!email || !password) {
-        alert('Please enter both email and password.');
-        return;
-      }
-
+      const loginBtn = form.querySelector('button');
       loginBtn.disabled = true;
       loginBtn.textContent = 'Logging in...';
 
+      const email = form.email.value.trim();
+      const password = form.password.value.trim();
+
       try {
-        // Firebase Auth login
+        // Firebase login
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
-        // Fetch username from Firestore
+        // Get username from Firestore
         const doc = await db.collection("users").doc(user.uid).get();
         const username = doc.exists ? doc.data().username : email;
 
-        // Redirect to Buyer.html with username
+        // Redirect to Buyer.html
         window.location.href = `Buyer.html?user=${encodeURIComponent(username)}`;
       } catch (error) {
         alert(error.message);
