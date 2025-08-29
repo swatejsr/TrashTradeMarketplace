@@ -8,63 +8,96 @@
 </head>
 <body>
   <div class="wrapper">
-   <div class="form-container register">
-    <form method="post" name="Register">
+    <div class="form-container register">
+      <form method="post" name="Register">
         <h2>Register</h2>
         <div class="form-group">
-            <input type="text" name="username" required>
-            <img src="icons/user-solid.svg" alt="User Icon" class="form-icon">
-            <label for="">username</label>
+          <input type="text" name="username" required>
+          <img src="icons/user-solid.svg" alt="User Icon" class="form-icon">
+          <label>username</label>
         </div>
         <div class="form-group">
-            <input type="password" name="password" required>
-            <img src="icons/lock-solid.svg" alt="Lock Icon" class="form-icon">
-            <label for="">password</label>
+          <input type="password" name="password" required>
+          <img src="icons/lock-solid.svg" alt="Lock Icon" class="form-icon">
+          <label>password</label>
         </div>
         <div class="form-group">
-            <input type="password" name="confirm-password" required>
-            <img src="icons/lock-solid.svg" alt="Lock Icon" class="form-icon">
-            <label for="">confirm password</label>
+          <input type="password" name="confirm-password" required>
+          <img src="icons/lock-solid.svg" alt="Lock Icon" class="form-icon">
+          <label>confirm password</label>
         </div>
         <div class="form-group">
-            <input type="email" name="email" required>
-            <img src="icons/envelope-solid.svg" alt="Email Icon" class="form-icon">
-            <label for="">email</label>
+          <input type="email" name="email" required>
+          <img src="icons/envelope-solid.svg" alt="Email Icon" class="form-icon">
+          <label>email</label>
         </div>
         <button type="submit" class="btn">Register</button>
-    </form>
- </div>
-</div>
-<script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwm7WpfglKphVFD8rMc2AKnc9xR4LhR2jO5ncTOu4j42MNb4YU4CwArf1degUuNQ4QtTw/exec';
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAGMdccU6qvGR9IJLwko6c6Kx77jdhDAV0",
+      authDomain: "trashtrademarketplace-24011.firebaseapp.com",
+      projectId: "trashtrademarketplace-24011",
+      storageBucket: "trashtrademarketplace-24011.appspot.com",
+      messagingSenderId: "77243085731",
+      appId: "1:77243085731:web:9d40959859718fd3696016"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
     const form = document.forms['Register'];
 
-    form.addEventListener('submit', e => {
-        e.preventDefault(); // Prevent default form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-        // Get UI elements (safely)
-        const loginBtn = form.querySelector('button'); // assumes there's only one button
-        const loader = document.createElement('div');
-        loader.className = 'loader';
-        form.appendChild(loader); // or insert next to button
+      const loginBtn = form.querySelector('button');
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Registering...';
 
-        // Show loading state
-        loader.style.display = 'block';
-        loginBtn.disabled = true;
-        loginBtn.textContent = 'Registering...';
+      const username = form.username.value.trim();
+      const email = form.email.value.trim();
+      const password = form.password.value;
+      const confirmPassword = form['confirm-password'].value;
 
-        // Submit to Google Script
-        fetch(scriptURL, { method: 'POST', body: new FormData(form) })
-            .then(response => {
-                window.location.href = "Buyer.html";
-            })
-            .catch(error => {
-                console.error('Error!', error.message);
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Register';
-                loader.style.display = 'none';
-            });
+      if (password !== confirmPassword) {
+        alert("Passwords do not match!");
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Register';
+        return;
+      }
+
+      try {
+        // Create user in Firebase Auth
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        // Save extra info in Firestore
+        await db.collection("users").doc(user.uid).set({
+          username: username,
+          email: email,
+          createdAt: new Date()
+        });
+
+        // Redirect after registration
+        window.location.href = "Buyer.html";
+      } catch (error) {
+        alert(error.message);
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Register';
+      }
     });
-</script>
+  </script>
 </body>
 </html>
