@@ -9,27 +9,27 @@
 <body>
   <div class="wrapper">
     <div class="form-container register">
-      <form method="post" name="Register">
+      <form name="Register">
         <h2>Register</h2>
         <div class="form-group">
           <input type="text" name="username" required>
           <img src="icons/user-solid.svg" alt="User Icon" class="form-icon">
-          <label>username</label>
+          <label>Username</label>
         </div>
         <div class="form-group">
           <input type="password" name="password" required>
           <img src="icons/lock-solid.svg" alt="Lock Icon" class="form-icon">
-          <label>password</label>
+          <label>Password</label>
         </div>
         <div class="form-group">
           <input type="password" name="confirm-password" required>
           <img src="icons/lock-solid.svg" alt="Lock Icon" class="form-icon">
-          <label>confirm password</label>
+          <label>Confirm Password</label>
         </div>
         <div class="form-group">
           <input type="email" name="email" required>
           <img src="icons/envelope-solid.svg" alt="Email Icon" class="form-icon">
-          <label>email</label>
+          <label>Email</label>
         </div>
         <button type="submit" class="btn">Register</button>
       </form>
@@ -42,15 +42,15 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
 
   <script>
-    // Firebase config
+    // Your Firebase config
     const firebaseConfig = {
-      apiKey: "AIzaSyAGMdccU6qvGR9IJLwko6c6Kx77jdhDAV0",
-      authDomain: "trashtrademarketplace-24011.firebaseapp.com",
-      projectId: "trashtrademarketplace-24011",
-      storageBucket: "trashtrademarketplace-24011.appspot.com",
-      messagingSenderId: "77243085731",
-      appId: "1:77243085731:web:9d40959859718fd3696016"
-    };
+  apiKey: "AIzaSyAGMdccU6qvGR9IJLwko6c6Kx77jdhDAV0",
+  authDomain: "trashtrademarketplace-24011.firebaseapp.com",
+  projectId: "trashtrademarketplace-24011",
+  storageBucket: "trashtrademarketplace-24011.firebasestorage.app",
+  messagingSenderId: "77243085731",
+  appId: "1:77243085731:web:9d40959859718fd3696016"
+};
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
@@ -68,8 +68,8 @@
 
       const username = form.username.value.trim();
       const email = form.email.value.trim();
-      const password = form.password.value;
-      const confirmPassword = form['confirm-password'].value;
+      const password = form.password.value.trim();
+      const confirmPassword = form['confirm-password'].value.trim();
 
       if (password !== confirmPassword) {
         alert("Passwords do not match!");
@@ -79,7 +79,7 @@
       }
 
       try {
-        // Create user in Firebase Auth
+        // Create Firebase Auth user
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
@@ -90,7 +90,7 @@
           createdAt: new Date()
         });
 
-        // Redirect after registration
+        // Redirect
         window.location.href = "Buyer.html";
       } catch (error) {
         alert(error.message);
