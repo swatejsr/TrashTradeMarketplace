@@ -10,6 +10,7 @@ document.getElementById('user-input').addEventListener('keydown', function (e) {
 let stage = 0;
 let userName = '';
 let userCity = '';
+let userAddress = '';
 let userWaste = '';
 let userWeight = 0;
 
@@ -56,10 +57,11 @@ function handleConversation(userInput) {
         } else if (stage === 1) {
             userCity = userInput;
             botMessage.textContent = `Got it! You're from ${userCity}. Please enter your full address for collection and delivery.`;
-            stage++; 
+            stage++;
+
         } else if (stage === 2) {
-            userCity = userInput;
-            botMessage.textContent = `Great! So you're ${userName} from ${userCity}. What type of waste do you have? (paper, plastic, or metal)`;
+            userAddress = userInput;
+            botMessage.textContent = `Thank you! So your address is: ${userAddress}. What type of waste do you have? (paper, plastic, or metal)`;
             stage++;
 
         } else if (stage === 3) {
@@ -111,4 +113,3 @@ function scrollToBottom() {
     const chatWindow = document.getElementById('chat-window');
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
-
