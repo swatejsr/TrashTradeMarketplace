@@ -55,10 +55,14 @@ function handleConversation(userInput) {
 
         } else if (stage === 1) {
             userCity = userInput;
+            botMessage.textContent = `Got it! You're from ${userCity}. Please enter your full address for collection and delivery.`;
+            stage++; 
+        } else if (stage === 2) {
+            userCity = userInput;
             botMessage.textContent = `Great! So you're ${userName} from ${userCity}. What type of waste do you have? (paper, plastic, or metal)`;
             stage++;
 
-        } else if (stage === 2) {
+        } else if (stage === 3) {
             const validWasteTypes = ['paper', 'plastic', 'metal'];
             if (validWasteTypes.includes(userInput.toLowerCase())) {
                 userWaste = userInput.toLowerCase();
@@ -68,7 +72,7 @@ function handleConversation(userInput) {
                 botMessage.textContent = "Please enter a valid waste type: paper, plastic, or metal.";
             }
 
-        } else if (stage === 3) {
+        } else if (stage === 4) {
             const weight = parseFloat(userInput);
             if (weight >= 5 && weight <= 100) {
                 userWeight = weight;
@@ -107,3 +111,4 @@ function scrollToBottom() {
     const chatWindow = document.getElementById('chat-window');
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
+
