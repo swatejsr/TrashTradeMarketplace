@@ -49,8 +49,8 @@ function handleConversation(userInput) {
         botMessage.className = 'message bot-message';
 
         if (stage === 0) {
-            userName = userInput;
-            botMessage.textContent = `Nice to meet you, ${userName}! Which city are you from?`;
+            userCity = userInput;
+            botMessage.textContent = `Got it! You're from ${userCity}. Please enter your full address for collection and delivery.`;
             stage++;
         } else if (stage === 1) {
             userCity = userInput;
@@ -97,3 +97,4 @@ function scrollToBottom() {
     const chatWindow = document.getElementById('chat-window');
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
+
