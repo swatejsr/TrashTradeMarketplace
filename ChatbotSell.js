@@ -10,8 +10,10 @@ document.getElementById('user-input').addEventListener('keydown', function (e) {
 let stage = 0;
 let userName = '';
 let userCity = '';
+let userAddress = '';
 let userWaste = '';
 let userWeight = 0;
+let userUPI = '';
 
 function startConversation() {
     setTimeout(() => {
@@ -49,14 +51,21 @@ function handleConversation(userInput) {
         botMessage.className = 'message bot-message';
 
         if (stage === 0) {
+            userName = userInput;
+            botMessage.textContent = `Nice to meet you, ${userName}! Which city are you from?`;
+            stage++;
+
+        } else if (stage === 1) {
             userCity = userInput;
             botMessage.textContent = `Got it! You're from ${userCity}. Please enter your full address for collection and delivery.`;
             stage++;
-        } else if (stage === 1) {
-            userCity = userInput;
-            botMessage.textContent = `Great! So you're ${userName} from ${userCity}. What type of waste do you have? (paper, plastic, or metal)`;
-            stage++;
+
         } else if (stage === 2) {
+            userAddress = userInput;
+            botMessage.textContent = `Thank you! Your address is: ${userAddress}. What type of waste do you have? (paper, plastic, or metal)`;
+            stage++;
+
+        } else if (stage === 3) {
             const validWasteTypes = ['paper', 'plastic', 'metal'];
             if (validWasteTypes.includes(userInput.toLowerCase())) {
                 userWaste = userInput.toLowerCase();
@@ -65,7 +74,8 @@ function handleConversation(userInput) {
             } else {
                 botMessage.textContent = "Please enter a valid waste type: paper, plastic, or metal.";
             }
-        } else if (stage === 3) {
+
+        } else if (stage === 4) {
             const weight = parseFloat(userInput);
             if (weight >= 5 && weight <= 100) {
                 userWeight = weight;
@@ -80,10 +90,12 @@ function handleConversation(userInput) {
             } else {
                 botMessage.textContent = "Please enter a valid weight between 5kg and 100kg.";
             }
-        } else if (stage === 4) {
-            const userUPI = userInput;
+
+        } else if (stage === 5) {
+            userUPI = userInput;
             botMessage.textContent = `Thank you! Your payment will be processed soon using UPI ID: ${userUPI}.`;
             stage++;
+
         } else {
             botMessage.textContent = "I didn't understand that. Can you ask something else?";
         }
@@ -97,4 +109,3 @@ function scrollToBottom() {
     const chatWindow = document.getElementById('chat-window');
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
-
